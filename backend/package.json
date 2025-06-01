@@ -1,0 +1,21 @@
+{
+  "name": "swipo-event-management",
+  "version": "1.0.0",
+  "description": "This is an assignment task to show case my MERN skill",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "author": "Ritisha",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cookieparser": "^0.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.15.1",
+    "multer": "^2.0.0"
+  }
+}
