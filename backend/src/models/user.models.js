@@ -14,6 +14,10 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
+    username: {
+      type: String,
+      required: true,
+    },
 
     password: {
       type: String,
@@ -37,6 +41,12 @@ const userSchema = new Schema(
     },
 
     otpExpiry: {
+      type: Date,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpiry: {
       type: Date,
     },
   },

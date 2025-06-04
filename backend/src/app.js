@@ -7,16 +7,12 @@ import cors from "cors";
 
 export const app = express();
 
-// middleware
+
 app.use(cors());
-app.use(express.json()); // to parse incoming JSON
+app.use(express.json()); 
 
-// default route
-app.get("/", (req, res) => {
-  res.send("🚀 Welcome to SWIPO Event Management Backend");
-});
+import userRoutes from './routes/user.routes.js'
 
-// TODO: Mount all routes here
-// app.use("/api/auth", authRoutes);
-// app.use("/api/events", eventRoutes);
+
+app.use("/api/v1/user", userRoutes);
 
