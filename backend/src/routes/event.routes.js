@@ -3,6 +3,7 @@ import {
   addNewEvent,
   deleteEvent,
   editEventDetails,
+  getAllEventWithPagination,
   viewSingleEvent,
 } from "../controllers/event.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -17,6 +18,7 @@ router.post(
   addNewEvent
 );
 router.route("/view-event/:eventId").get(viewSingleEvent);
-router.route("/edit-event").put(upload.array("images"),editEventDetails)
-router.route('/delete-event/:eventId').delete(deleteEvent)
+router.route("/edit-event").put(upload.array("images"), editEventDetails);
+router.route("/delete-event/:eventId").delete(deleteEvent);
+router.route("/events").get(getAllEventWithPagination);
 export default router;

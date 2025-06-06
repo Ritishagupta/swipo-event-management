@@ -196,5 +196,55 @@ const deleteEvent = AsyncHandler(async (req, res) => {
     throw new ApiError(500, error.message || "Internal server error");
   }
 });
+const getAllEventWithPagination = AsyncHandler(async (req, res) => {
+  try {
+    // Default values from query params
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
 
-export { addNewEvent, viewSingleEvent, editEventDetails, deleteEvent };
+    // Calculate skip value
+    const skip = (page - 1) * limit;
+
+    // Fetch paginated events
+    const events = await Event.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+
+    if (!events || events.length == 0) {
+      throw new ApiError(404, "No events found");
+    }
+    // Get total count
+    const totalEvents = await Event.countDocuments();
+
+    // Prepare metadata
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          events,
+          meta: {
+            totalEvents,
+            totalPages,
+            currentPage: page,
+            limit,
+          },
+        },
+        "Events fetched successfully"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(500, error.message || "Internal server error");
+  }
+});
+
+export {
+  addNewEvent,
+  viewSingleEvent,
+  editEventDetails,
+  deleteEvent,
+  getAllEventWithPagination,
+};
