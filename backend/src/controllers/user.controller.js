@@ -7,6 +7,8 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { generateOTP } from "../utils/generateOtp.js";
 
+import crypto from "crypto";
+
 const registerUser = AsyncHandler(async (req, res) => {
   try {
     const { name, email, username, password, role } = req.body;
@@ -231,7 +233,6 @@ const forgotPassword = AsyncHandler(async (req, res) => {
       throw new ApiError(404, "User not found with this email");
     }
 
-    // 3. Generate secure token
     const resetToken = crypto.randomBytes(32).toString("hex");
     const tokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
 
@@ -239,7 +240,6 @@ const forgotPassword = AsyncHandler(async (req, res) => {
     user.resetPasswordExpiry = tokenExpiry;
     await user.save();
 
-    // 4. Create frontend link to reset
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
     const emailData = {
@@ -247,13 +247,15 @@ const forgotPassword = AsyncHandler(async (req, res) => {
       text: `Click the link below to reset your password:\n\n${resetLink}\n\nThis link will expire in 15 minutes.`,
     };
 
-   const {success} =  await sendEmail(user.email, emailData);
+    const { success } = await sendEmail(user.email, emailData);
 
-   if(!success){
-    throw new ApiError(500,"internal server error. please try again")
-   }
+    if (!success) {
+      throw new ApiError(500, "internal server error. please try again");
+    }
 
-    
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "resent link sent to the email"));
   } catch (error) {
     throw new ApiError(500, error.message || "Internal server error");
   }
