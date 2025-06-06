@@ -261,4 +261,42 @@ const forgotPassword = AsyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, verifyAdminOTP, forgotPassword };
+const verifyAndResetForgotPassword = AsyncHandler(async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+
+    if (!resetToken || !newPassword?.trim()) {
+      throw new ApiError(400, "Reset token and new password are required");
+    }
+
+    const user = await User.findOne({ resetPasswordToken: resetToken });
+
+    if (!user) {
+      throw new ApiError(404, "Invalid or expired reset token");
+    }
+
+    if (user.resetPasswordExpiry < new Date()) {
+      throw new ApiError(409, "Reset token has expired");
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    user.resetPasswordToken = null;
+    user.resetPasswordExpiry = null;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password reset successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message || "Internal Server Error");
+  }
+});
+
+export {
+  registerUser,
+  loginUser,
+  verifyAdminOTP,
+  forgotPassword,
+  verifyAndResetForgotPassword,
+};
