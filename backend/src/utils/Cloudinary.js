@@ -3,53 +3,63 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config({ path: "./.env" });
 
+//  Helper: Get Cloudinary public_id from image URL
 const getCloudinaryPublicId = (url) => {
   try {
     const parts = url.split("/");
     const fileName = parts[parts.length - 1];
-    const publicId = fileName.split(".")[0]; // remove extension
-    return `swipo-events/${publicId}`; // include folder if used
-  } catch {
+    const publicId = fileName.split(".")[0];
+    return `swipo-events-management/${publicId}`;
+  } catch (err) {
+    console.error("Failed to get publicId from URL", err);
     return null;
   }
 };
 
+//  Configure Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+//  Upload Function
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
-    //Upload file on cloudinary
+
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
       folder: "swipo-events-management",
     });
-    console.log("Event file has been uploaded ");
-    fs.unlinkSync(localFilePath); //Remove the local file after uploading on cloudinary gets failed.
+
+    console.log("Event file has been uploaded ✅");
+    fs.unlinkSync(localFilePath); // Remove temp file
+
     return response;
   } catch (error) {
-    console.log(error);
-    fs.unlinkSync(localFilePath); //Remove the local file after uploading on cloudinary gets failed.
+    console.error("Cloudinary Upload Error:", error);
+    fs.unlinkSync(localFilePath);
     return null;
   }
 };
 
+// Delete Function
 const deleteFromCloudinary = async (url) => {
   try {
     if (!url) return null;
 
-    //delete from cloudinary
-    const publicId = getCloudinaryPublicId(imageUrl);
+    const publicId = getCloudinaryPublicId(url);
     if (publicId) {
       const result = await cloudinary.uploader.destroy(publicId);
-      if (result) {
-        return result;
-      }
+      console.log("Image deleted ✅ --", result);
+      return result;
+    } else {
+      console.warn("Public ID could not be extracted.");
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("Cloudinary Delete Error:", error);
+  }
 };
+
 export { uploadOnCloudinary, deleteFromCloudinary };

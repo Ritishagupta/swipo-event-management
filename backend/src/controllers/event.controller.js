@@ -2,7 +2,10 @@ import Event from "../models/event.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
-import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 
 const addNewEvent = AsyncHandler(async (req, res) => {
   try {
@@ -125,6 +128,12 @@ const editEventDetails = AsyncHandler(async (req, res) => {
     let uploadedImageUrls = [];
 
     if (files && files.length > 0) {
+      if (event.images && event.images.length > 0) {
+        for (const imageUrl of event.images) {
+          await deleteFromCloudinary(imageUrl);
+        }
+      }
+
       for (const file of files) {
         const result = await uploadOnCloudinary(file.path, {
           folder: "swipo-events", // optional folder in Cloudinary
@@ -173,8 +182,7 @@ const deleteEvent = AsyncHandler(async (req, res) => {
     // 🧹 Delete images from Cloudinary
     if (event.images && event.images.length > 0) {
       for (const imageUrl of event.images) {
-         await cloudinary.uploader.destroy(imageUrl);
-         
+        await deleteFromCloudinary(imageUrl);
       }
     }
 
