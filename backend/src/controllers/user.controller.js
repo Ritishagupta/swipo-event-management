@@ -293,10 +293,60 @@ const verifyAndResetForgotPassword = AsyncHandler(async (req, res) => {
   }
 });
 
+const updatePassword = AsyncHandler(async (req, res) => {
+  try {
+    const { userId, oldPassword, newPassword } = req.body;
+
+    if (!userId || !oldPassword || !newPassword) {
+      throw new ApiError(400, "All fields are required");
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordCorrect) {
+      throw new ApiError(409, "Old password is incorrect. Please try again");
+    }
+
+   
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+ 
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Password updated successfully"));
+  } catch (error) {
+    throw new ApiError(500, error.message || "Internal Server Error");
+  }
+});
+
+
+const logoutUser = AsyncHandler(async (req, res) => {
+
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .clearCookie("token", options)
+        .json(
+            new ApiResponse(200, {}, "User logged Out")
+        )
+})
+
 export {
   registerUser,
   loginUser,
   verifyAdminOTP,
   forgotPassword,
   verifyAndResetForgotPassword,
+  updatePassword,
+  logoutUser
 };
