@@ -1,24 +1,52 @@
+import axios from "axios"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import Loader from "../../components/Loader.jsx";
 
 const Login = () => {
-    const navigate =useNavigate()
-
+    const navigate = useNavigate();
     const [form, setForm] = useState({
         username: "",
-        password: ""
-    })
-    const [admin, setAdmin] = useState(false)
+        password: "",
+        role: "user", // default role
+    });
+    const [loading, setLoading] = useState(false)
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
         try {
-            if(admin) navigate('/verify-otp')
-            console.log(form)
+            setLoading(true)
+            const response = await axios.post(`/api/v1/user/login`, form);
+   
+
+            if (response?.data?.statusCode) {
+                if (form.role === "admin") {
+                    navigate("/verify-otp");
+                } else {
+                    navigate("/user");
+                }
+                setForm({
+                    username: "",
+                    password: "",
+                    role: "user",
+                });
+            } else {
+                console.error("Login failed:", response?.data?.message);
+            }
+
+            setLoading(false)
         } catch (error) {
-            
+            console.error("Login error:", error.response?.data?.message || error.message);
+        } finally {
+            setLoading(false)
         }
-    }
+    };
+
 
 
     return (
@@ -32,37 +60,48 @@ const Login = () => {
                             <fieldset className="fieldset">
                                 <label className="label">Username</label>
                                 <input
+                                    name="username"
+                                    value={form.username}
                                     type="text"
                                     className="input"
                                     placeholder="Enter your username"
-                                    onChange={(e) => form.username = e.target.value}
+                                    onChange={handleChange}
                                 />
                                 <label className="label">Password</label>
                                 <input
+                                    name="password"
+                                    value={form.password}
                                     type="password"
                                     className="input"
                                     placeholder="Password"
-                                    onChange={(e) => form.password = e.target.value}
+                                    onChange={handleChange}
                                 />
                                 <label className="label mb-2">
                                     <input
-                                        onChange={(e) => setAdmin(true)}
+                                        name="role"
+                                        onChange={(e) =>
+                                            setForm({ ...form, role: e.target.checked ? "admin" : "user" })
+                                        }
                                         type="checkbox"
                                         className="toggle toggle-accent toggle-sm"
                                     />
                                     <span className="text-red-300">I'm Admin</span>
                                 </label>
                                 <div>
-                                    <a className="link link-hover">Forgot password?</a>
+                                    <Link to={'/forgot-password'} className="link link-hover">Forgot password?</Link>
                                 </div>
                                 <button
                                     type="submit"
-                                    className="btn btn-accent mt-4 font-bold">Login</button>
+                                    className="btn btn-accent mt-4 font-bold">
+                                    {loading ? <Loader /> : "Login"}
+                                </button>
 
                             </fieldset>
                         </form>
                         <p className="text-center ">Or</p>
-                        <button className="btn btn-link">didn't have account? register</button>
+                        <button className="btn btn-link">
+                            <Link to={'/register'}>didn't have account? register</Link>
+                        </button>
                     </div>
                 </div>
 
