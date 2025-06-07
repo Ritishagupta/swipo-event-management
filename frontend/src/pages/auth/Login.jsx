@@ -2,8 +2,12 @@ import axios from "axios"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Loader from "../../components/Loader.jsx";
+import toast from "react-hot-toast";
+import { useGlobalContext } from "../../context/Contexts.jsx";
 
 const Login = () => {
+
+    const { login } = useGlobalContext()
     const navigate = useNavigate();
     const [form, setForm] = useState({
         username: "",
@@ -11,6 +15,7 @@ const Login = () => {
         role: "user", // default role
     });
     const [loading, setLoading] = useState(false)
+
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -28,8 +33,8 @@ const Login = () => {
                 if (form.role === "admin") {
                     navigate(`/verify-otp/${response.data?.data?._id}`);
                 } else {
-                    localStorage.removeItem("user")
-                    localStorage.setItem("user", JSON.stringify(response?.data?.data));
+                    login(response?.data?.data)
+                    toast.success(response?.data?.message);
                     navigate("/user");
                 }
                 setForm({
@@ -37,13 +42,12 @@ const Login = () => {
                     password: "",
                     role: "user",
                 });
-            } else {
-                console.error("Login failed:", response?.data?.message);
             }
 
             setLoading(false)
         } catch (error) {
-            console.error("Login error:", error.response?.data?.message || error.message);
+
+            toast.error(error.response?.data?.message || error.message);
         } finally {
             setLoading(false)
         }

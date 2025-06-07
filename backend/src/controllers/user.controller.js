@@ -58,7 +58,7 @@ const registerUser = AsyncHandler(async (req, res) => {
           name: newUser.name,
           email: newUser.email,
           username: newUser.username,
-          role: newUser.role,
+         
         },
         "User registered successfully"
       )

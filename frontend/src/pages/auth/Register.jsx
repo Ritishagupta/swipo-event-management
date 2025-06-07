@@ -2,10 +2,8 @@ import axios from "axios"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Loader from "../../components/Loader.jsx";
-
+import toast from "react-hot-toast";
 const Register = () => {
-
-
     const navigate = useNavigate();
     const [form, setForm] = useState({
         name: "",
@@ -28,6 +26,9 @@ const Register = () => {
             const response = await axios.post(`/api/v1/user/register`, form);
 
             if (response?.data?.statusCode) {
+                toast.success(response?.data?.message);
+                localStorage.removeItem("user")
+                localStorage.setItem("user", JSON.stringify(response?.data?.data));
 
                 navigate("/user");
                 setForm({
@@ -41,7 +42,7 @@ const Register = () => {
 
             setLoading(false)
         } catch (error) {
-            console.error("Login error:", error.response?.data?.message || error.message);
+            toast.error(error.response?.data?.message || error.message);
         } finally {
             setLoading(false)
         }
