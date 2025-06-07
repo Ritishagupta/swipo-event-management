@@ -196,29 +196,38 @@ const deleteEvent = AsyncHandler(async (req, res) => {
     throw new ApiError(500, error.message || "Internal server error");
   }
 });
-const getAllEventWithPagination = AsyncHandler(async (req, res) => {
-  try {
-    // Default values from query params
-    let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 10;
 
-    // Calculate skip value
+
+// This controller works for users as well as admin
+const getAllEventsAdvanced = AsyncHandler(async (req, res) => {
+  try {
+    let { page = 1, limit = 10, title, city, date } = req.query;
+
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const queryObj = {};
+
+    if (title) {
+      queryObj.title = { $regex: title, $options: "i" }; // case-insensitive search
+    }
+
+    if (city) {
+      queryObj.city = { $regex: city, $options: "i" };
+    }
+
+    if (date) {
+      queryObj.date = date; // assuming ISO format like '2025-06-10'
+    }
+
     const skip = (page - 1) * limit;
 
-    // Fetch paginated events
-    const events = await Event.find()
+    const events = await Event.find(queryObj)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-
-    if (!events || events.length == 0) {
-      throw new ApiError(404, "No events found");
-    }
-    // Get total count
-    const totalEvents = await Event.countDocuments();
-
-    // Prepare metadata
+    const totalEvents = await Event.countDocuments(queryObj);
     const totalPages = Math.ceil(totalEvents / limit);
 
     return res.status(200).json(
@@ -246,5 +255,5 @@ export {
   viewSingleEvent,
   editEventDetails,
   deleteEvent,
-  getAllEventWithPagination,
+  getAllEventsAdvanced,
 };

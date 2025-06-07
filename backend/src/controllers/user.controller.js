@@ -156,6 +156,7 @@ const loginUser = AsyncHandler(async (req, res) => {
   }
 });
 
+// Controller for admin
 const verifyAdminOTP = AsyncHandler(async (req, res) => {
   try {
     const { userId, otp } = req.body;
