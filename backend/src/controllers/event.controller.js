@@ -197,6 +197,57 @@ const deleteEvent = AsyncHandler(async (req, res) => {
   }
 });
 
+const getUsersEvents = AsyncHandler(async (req, res) => {
+  try {
+    const userId = req.user?._id;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { title, city, date } = req.query;
+
+    // Base query for the user
+    const query = { createdBy: userId };
+
+    // Search by title (case-insensitive)
+    if (title) {
+      query.title = { $regex: title, $options: "i" };
+    }
+
+    // Filter by city
+    if (city) {
+      query.city = city;
+    }
+
+    // Filter by date
+    if (date) {
+      query.date = new Date(date);
+    }
+
+    const totalEvents = await Event.countDocuments(query);
+
+    const events = await Event.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          totalEvents,
+          totalPages: Math.ceil(totalEvents / limit),
+          currentPage: page,
+          data: events,
+        },
+        "Events fetched successfully"
+      )
+    );
+  } catch (error) {
+    throw new ApiError(500, error.message || "Internal server error");
+  }
+});
 
 // This controller works for users as well as admin
 const getAllEventsAdvanced = AsyncHandler(async (req, res) => {
@@ -256,4 +307,5 @@ export {
   editEventDetails,
   deleteEvent,
   getAllEventsAdvanced,
+  getUsersEvents,
 };

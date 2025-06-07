@@ -1,21 +1,19 @@
-import { useState } from "react";
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-const Pagination = () => {
-    const [selectedPage, setSelectedPage] = useState("1");
+    if (totalPages <= 1) return null;
 
     return (
         <div className="join my-5 flex items-center justify-center">
-            {["1", "2", "3", "4"].map((page) => (
-                <input
+            {pages.map((page) => (
+                <button
                     key={page}
-                    className="join-item btn btn-square"
-                    type="radio"
-                    name="pagination"
-                    aria-label={page}
-                    value={page}
-                    checked={selectedPage === page}
-                    onChange={() => setSelectedPage(page)}
-                />
+                    className={`join-item btn btn-square ${page === currentPage ? "btn-active" : ""
+                        }`}
+                    onClick={() => onPageChange(page)}
+                >
+                    {page}
+                </button>
             ))}
         </div>
     );

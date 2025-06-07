@@ -1,46 +1,73 @@
+import axios from "axios"
 import { useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import Loader from "../../components/Loader"
 
 const Verify_OTP = () => {
 
-    const[otp,setOtp] = useState()
+    const { userId } = useParams()
+    const [otp, setOtp] = useState("")
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log("OTP submitted --- ",otp)
+
+        try {
+            setLoading(true)
+            const response = await axios.post(`/api/v1/user/verify-otp`, {
+                userId,
+                otp
+            })
+
+            if (response?.data?.statusCode === 200) {
+                localStorage.setItem("user", JSON.stringify(response?.data?.data));
+                navigate('/admin')
+            }
+            setLoading(false)
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
         <>
-            <div className="hero bg-base-200 min-h-screen">
-                <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
+            <div className="hero bg-base-200 min-h-screen ">
+                <div className="card bg-base-100 w-full  shrink-0   max-w-md  shadow-md rounded-md p-6 border border-cyan-300 ">
 
                     <div className="card-body">
-                        <h1 className="text-center text-3xl">Verify OTP!</h1>
+                        <h1 className="text-center text-3xl">Verify OTP! </h1>
                         <form onSubmit={handleSubmit}>
                             <fieldset className="fieldset">
-                               
+
                                 <input
+                                    value={otp}
                                     type="tel"
-                                    className="input tabular-nums"
+                                    inputMode="numeric"
+                                    className="input input-bordered w-full"
                                     required
-                                    placeholder="XXXXXX"
+                                    placeholder="Enter 6-digit OTP"
                                     pattern="[0-9]*"
-                                    minLength="10"
-                                    maxLength="10"
+                                    minLength="6"
+                                    maxLength="6"
                                     title="Must be 10 digits"
-                                    onChange={(e)=>setOtp(Number(e.target.value))}
+                                    onChange={(e) => setOtp(e.target.value)}
                                 />
                                 <button
                                     type="submit"
-                                    className="btn btn-accent mt-4 font-bold">Verify</button>
+                                    className="btn btn-accent mt-4 font-bold">
+                                    {loading ? <Loader /> : "Verify"}
+                                </button>
 
                             </fieldset>
                         </form>
-                        <button className="btn btn-link">resend?</button>
                     </div>
                 </div>
 
             </div>
+            
         </>
     )
 }

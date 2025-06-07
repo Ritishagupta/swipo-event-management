@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import axios from "axios";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Loader from "../../components/Loader";
 
 const ResetPassword = () => {
   const { token } = useParams(); // token from route
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false)
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,25 +18,23 @@ const ResetPassword = () => {
       alert("Passwords do not match!");
       return;
     }
+    try {
+      setLoading(true)
+      const response = await axios.post(`/api/v1/user/verify-forgot-password`, {
+        resetToken: token,
+        newPassword: password
+      })
 
-    // try {
-    //   const res = await fetch(`/api/auth/reset-password/${token}`, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({ password }),
-    //   });
+      if (response?.data?.statusCode === 200) {
+        navigate('/')
+      }
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
 
-    //   const data = await res.json();
-
-    //   if (res.ok) {
-    //     alert("Password reset successful!");
-    //     navigate("/login");
-    //   } else {
-    //     alert(data.message || "Something went wrong!");
-    //   }
-    // } catch (err) {
-    //   alert("Server error. Try again later.");
-    // }
   };
 
   return (
@@ -63,7 +64,7 @@ const ResetPassword = () => {
         />
 
         <button type="submit" className="btn btn-accent w-full font-bold">
-          Reset Password
+          {loading ? <Loader /> : " Reset Password"}
         </button>
       </form>
     </div>

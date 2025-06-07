@@ -83,8 +83,8 @@ const UpdateEvent = () => {
                                         required
                                         placeholder="Phone"
                                         pattern="[0-9]*"
-                                        minlength="10"
-                                        maxlength="10"
+                                        minLength="10"
+                                        maxLength="10"
                                         title="Must be 10 digits"
                                     />
                                 </label>

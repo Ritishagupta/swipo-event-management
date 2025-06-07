@@ -113,7 +113,7 @@ const loginUser = AsyncHandler(async (req, res) => {
         .json(
           new ApiResponse(
             200,
-            {},
+            {_id:user._id},
             "OTP sent to admin email. Please verify to login."
           )
         );
@@ -297,6 +297,7 @@ const verifyAndResetForgotPassword = AsyncHandler(async (req, res) => {
 const updatePassword = AsyncHandler(async (req, res) => {
   try {
     const { userId, oldPassword, newPassword } = req.body;
+
 
     if (!userId || !oldPassword || !newPassword) {
       throw new ApiError(400, "All fields are required");

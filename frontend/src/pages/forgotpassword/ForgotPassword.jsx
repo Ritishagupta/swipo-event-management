@@ -1,68 +1,57 @@
 import { useState } from "react";
-
+import axios from "axios";
+import Loader from "../../components/Loader.jsx";
 const ForgotPassword = () => {
-  const [step, setStep] = useState("email"); // "email" or "otp"
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Call API to send OTP to the given email
-    // For now, just move to OTP input
-    if (email.trim()) {
-      setStep("otp");
+    setLoading(true);
+    setError("");
+    setMessage("");
+
+    try {
+      const response = await axios.post("/api/v1/user/forgot-password", { email });
+      if (response?.data?.statusCode ===200) {
+        setMessage("Reset password link has been sent to your email.");
+      } else {
+        setError("Failed to send reset link. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleOtpSubmit = (e) => {
-    e.preventDefault();
-    // TODO: Call API to verify OTP and redirect to reset password page
-    console.log("Verify OTP:", otp);
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <div className="w-full max-w-md  shadow-md rounded-md p-6 border border-cyan-300">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md shadow-md rounded-md p-6 border border-cyan-300">
         <h1 className="text-xl font-bold text-center mb-2">Forgot Password</h1>
         <p className="text-center text-gray-600 mb-4">
-          {step === "email"
-            ? "Enter your registered email to get OTP"
-            : `OTP sent to: ${email}`}
+          Enter your registered email to receive a reset link.
         </p>
 
-        {step === "email" ? (
-          <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input input-bordered w-full"
-              required
-            />
-            <button type="submit" className="btn btn-accent w-full">
-              Send OTP
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleOtpSubmit} className="flex flex-col gap-3">
-            <input
-              type="tel"
-              inputMode="numeric"
-              placeholder="Enter 6-digit OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              pattern="[0-9]*"
-              minLength={6}
-              maxLength={6}
-              className="input input-bordered w-full"
-              required
-            />
-            <button type="submit" className="btn btn-success w-full">
-              Verify OTP
-            </button>
-          </form>
-        )}
+        <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input input-bordered w-full"
+            required
+          />
+          <button type="submit" className="btn btn-accent w-full" disabled={loading}>
+            {loading ? <Loader/> : "Send Reset Link"}
+          </button>
+        </form>
+
+        {message && <p className="text-green-600 mt-4 text-center">{message}</p>}
+        {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
       </div>
     </div>
   );

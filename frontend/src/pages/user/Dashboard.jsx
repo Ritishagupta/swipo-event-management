@@ -1,8 +1,11 @@
 import Pagination from "../../components/Pagination.jsx";
 import EventCard from "./EventCard.jsx";
-import ResetPassword from "../user/ResetPassword.jsx";
+import UpdatePassword from "../user/UpdatePassword.jsx";
 
 const Dashboard = () => {
+
+    const user = JSON.parse(localStorage.getItem("user"))
+  
    return (
         <div className="p-10 ">
             <div className="border-cyan-300 border-2 rounded-md p-5 flex items-center justify-between">
@@ -14,8 +17,8 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div >
-                        <p className="font-bold">Ritisha Gupta</p>
-                        <p className="font-thin">ritisha@gmail.com</p>
+                        <p className="font-bold">{user.name}</p>
+                        <p className="font-thin">{user.email}</p>
                     </div>
 
 
@@ -37,6 +40,7 @@ const Dashboard = () => {
                                 </g>
                             </svg>
                             <input
+                            value={user.username}
                                 type="text"
                                 required
                                 placeholder="user@1213"
@@ -62,6 +66,7 @@ const Dashboard = () => {
                                     </g>
                                 </svg>
                                 <input
+                                
                                     type="password"
                                     required
                                     placeholder="******"
@@ -70,7 +75,7 @@ const Dashboard = () => {
                             </label>
                         </div>
 
-                        <ResetPassword />
+                        <UpdatePassword userId={user._id}/>
 
                     </div>
                 </div>

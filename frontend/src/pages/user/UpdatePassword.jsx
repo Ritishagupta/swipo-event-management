@@ -1,16 +1,62 @@
+import axios from "axios"
+import { useState } from "react"
 import { FaRegEdit } from "react-icons/fa"
+import Loader from "../../components/Loader"
 
-const ResetPassword = () => {
+const UpdatePassword = ({ userId }) => {
+
+
+    const [form, setForm] = useState({
+        userId: userId,
+        oldPassword: "",
+        newPassword: "",
+    })
+
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [loading, setLoading] = useState(false)
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (form.newPassword !== confirmPassword) {
+            alert("New Password and Confirm New Password doesn't match!")
+            return
+        }
+
+        try {
+            setLoading(true)
+            const response = await axios.post(`/api/v1/user/update-password`, form)
+
+            if (response?.data?.statusCode === 200) {
+                setForm({
+                    userId: userId,
+                    oldPassword: "",
+                    newPassword: "",
+                });
+                setConfirmPassword("")
+                setLoading(false)
+            }
+
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div>
-            {/* You can open the modal using document.getElementById('ID').showModal() method */}
+
             <button onClick={() => document.getElementById('my_modal_3').showModal()}>
                 <FaRegEdit className="text-2xl cursor-pointer" />
             </button>
             <dialog id="my_modal_3" className="modal">
-                <div className="modal-box">
-                    <form method="dialog">
-                        <label className="input validator mb-5">
+                <div className="modal-box py-12">
+                    <form method="dialog" onSubmit={handleSubmit}>
+                        <label className="input validator mb-5 w-full">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g
                                     strokeLinejoin="round"
@@ -26,12 +72,15 @@ const ResetPassword = () => {
                                 </g>
                             </svg>
                             <input
+                                name="oldPassword"
+                                value={form.oldPassword}
+                                onChange={handleChange}
                                 type="password"
                                 required
                                 placeholder="Old Password"
                             />
                         </label>
-                        <label className="input validator mb-5">
+                        <label className="input validator mb-5 w-full">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g
                                     strokeLinejoin="round"
@@ -47,12 +96,15 @@ const ResetPassword = () => {
                                 </g>
                             </svg>
                             <input
+                                onChange={handleChange}
+                                name="newPassword"
+                                value={form.newPassword}
                                 type="password"
                                 required
                                 placeholder="New Password"
                             />
                         </label>
-                        <label className="input validator mb-5">
+                        <label className="input validator mb-5 w-full">
                             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                                 <g
                                     strokeLinejoin="round"
@@ -68,6 +120,8 @@ const ResetPassword = () => {
                                 </g>
                             </svg>
                             <input
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 type="password"
                                 required
                                 placeholder="Confirm New Password"
@@ -75,7 +129,9 @@ const ResetPassword = () => {
                         </label>
                         <div>
 
-                            <button type="submit" className="btn btn-success font-black ">Update</button>
+                            <button type="submit" className="btn btn-success font-black w-full ">
+                                {loading ? <Loader /> : "Update"}
+                            </button>
                         </div>
 
 
@@ -90,4 +146,4 @@ const ResetPassword = () => {
     )
 }
 
-export default ResetPassword
+export default UpdatePassword

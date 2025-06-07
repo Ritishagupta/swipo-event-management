@@ -4,6 +4,7 @@ import {
   deleteEvent,
   editEventDetails,
   getAllEventsAdvanced,
+  getUsersEvents,
   viewSingleEvent,
 } from "../controllers/event.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
@@ -20,5 +21,6 @@ router.post(
 router.route("/view-event/:eventId").get(viewSingleEvent);
 router.route("/edit-event").put(upload.array("images"), editEventDetails);
 router.route("/delete-event/:eventId").delete(deleteEvent);
+router.route('/get-user-events').get(verifyJWT,getUsersEvents)
 router.route("/all-events").get(getAllEventsAdvanced);
 export default router;

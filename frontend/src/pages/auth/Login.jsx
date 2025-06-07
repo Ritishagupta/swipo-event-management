@@ -22,12 +22,14 @@ const Login = () => {
         try {
             setLoading(true)
             const response = await axios.post(`/api/v1/user/login`, form);
-   
 
-            if (response?.data?.statusCode) {
+
+            if (response?.data?.statusCode === 200) {
                 if (form.role === "admin") {
-                    navigate("/verify-otp");
+                    navigate(`/verify-otp/${response.data?.data?._id}`);
                 } else {
+                    localStorage.removeItem("user")
+                    localStorage.setItem("user", JSON.stringify(response?.data?.data));
                     navigate("/user");
                 }
                 setForm({
