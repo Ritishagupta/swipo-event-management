@@ -199,7 +199,7 @@ const deleteEvent = AsyncHandler(async (req, res) => {
 
 const getUsersEvents = AsyncHandler(async (req, res) => {
   try {
-    const userId = req.user?._id;
+    const userId = req?.user?._id;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;

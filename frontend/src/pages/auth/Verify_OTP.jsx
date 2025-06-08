@@ -2,6 +2,8 @@ import axios from "axios"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Loader from "../../components/Loader"
+import { useGlobalContext } from "../../context/Contexts"
+import toast from "react-hot-toast"
 
 const Verify_OTP = () => {
 
@@ -9,6 +11,7 @@ const Verify_OTP = () => {
     const [otp, setOtp] = useState("")
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const { login } = useGlobalContext()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -21,12 +24,13 @@ const Verify_OTP = () => {
             })
 
             if (response?.data?.statusCode === 200) {
-                localStorage.setItem("user", JSON.stringify(response?.data?.data));
+                login(response?.data?.data)
+                toast.success(response?.data?.message);
                 navigate('/admin')
             }
             setLoading(false)
         } catch (error) {
-            console.log(error)
+            toast.error(error.response?.data?.message || error.message);
         } finally {
             setLoading(false)
         }
@@ -67,7 +71,7 @@ const Verify_OTP = () => {
                 </div>
 
             </div>
-            
+
         </>
     )
 }

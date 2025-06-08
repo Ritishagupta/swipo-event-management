@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Loader from "../../components/Loader.jsx";
 import toast from "react-hot-toast";
+import { useGlobalContext } from "../../context/Contexts.jsx";
 const Register = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({
@@ -13,6 +14,7 @@ const Register = () => {
         role: "user", // default role
     });
     const [loading, setLoading] = useState(false)
+    const { login } = useGlobalContext()
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,9 +28,8 @@ const Register = () => {
             const response = await axios.post(`/api/v1/user/register`, form);
 
             if (response?.data?.statusCode) {
+                login(response?.data?.data)
                 toast.success(response?.data?.message);
-                localStorage.removeItem("user")
-                localStorage.setItem("user", JSON.stringify(response?.data?.data));
 
                 navigate("/user");
                 setForm({
