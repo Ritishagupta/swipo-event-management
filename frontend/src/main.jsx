@@ -13,6 +13,7 @@ import ResetPassword from './pages/forgotpassword/ResetPassword.jsx'
 import AdminDashboard from './pages/admin/Dashboard.jsx'
 import UserDashboard from './pages/user/Dashboard.jsx'
 import { ContextProvider } from './context/Contexts.jsx';
+import Event from './pages/event/Event.jsx';
 
 
 const router = createBrowserRouter([
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: '/reset-password/:token',
         element: <ResetPassword />
+      },
+      {
+        path:"/event/:eventId",
+        element:<Event/>
       }
     ]
   },

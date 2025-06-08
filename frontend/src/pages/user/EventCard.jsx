@@ -1,11 +1,15 @@
 import { AiOutlineLike } from "react-icons/ai";
 import { AiOutlineDislike } from "react-icons/ai";
-import { IoPersonCircleSharp } from "react-icons/io5";
 import { MdOutlinePlace } from "react-icons/md";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import UpdateEvent from "./UpdateEvent";
-const EventCard = ({ data,onEventUpdated }) => {
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useState } from "react";
+import Loader from "../../components/Loader";
+const EventCard = ({ data, onEventUpdated }) => {
     const {
+        _id,
         title,
         description,
         city,
@@ -19,6 +23,39 @@ const EventCard = ({ data,onEventUpdated }) => {
         displayStatus,
         images = [],
     } = data;
+    const [loading, setLoading] = useState(false)
+    const [copied, setCopied] = useState(false)
+
+    const copyEventURL = (eventId) => {
+        const url = `${window.location.origin}/event/${eventId}`;
+        navigator.clipboard.writeText(url)
+            .then(() => {
+                toast.success("Event link copied to clipboard!");
+            })
+            .catch(() => {
+                toast.error("Failed to copy event link.");
+            });
+        setCopied(true)
+    };
+
+
+    const deleteEvent = async () => {
+
+        try {
+            setLoading(true)
+            const response = await axios.delete(`/api/v1/event/delete-event/${_id}`)
+            if (response?.data?.statusCode === 200) {
+                toast.success(response?.data?.message)
+            }
+            onEventUpdated()
+            setLoading(false)
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <div className="card bg-base-100 w-60 shadow-sm border-cyan-300 border-2 p-2">
@@ -70,8 +107,16 @@ const EventCard = ({ data,onEventUpdated }) => {
             </div>
             <div className="my-2 flex items-center justify-between">
                 <UpdateEvent data={data} onEventUpdated={onEventUpdated} />
-                <button className="btn btn-error btn-sm font-bold">Delete</button>
-                <button className="btn btn-dash btn-info btn-sm">Copy URL</button>
+                <button
+                    onClick={deleteEvent}
+                    className="btn btn-error btn-sm font-bold ">
+
+                    {loading ? <><span className="loading loading-xs loading-spinner text-accent"></span></> : "Delete"}
+                </button>
+
+                {copied ? <button className="btn btn-dash btn-info btn-sm">Copied</button> : <button onClick={() => copyEventURL(data._id)} className="btn btn-sm btn-info font-bold">Copy URL</button>}
+
+
             </div>
 
         </div>

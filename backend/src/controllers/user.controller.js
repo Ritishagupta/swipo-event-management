@@ -58,6 +58,7 @@ const registerUser = AsyncHandler(async (req, res) => {
           name: newUser.name,
           email: newUser.email,
           username: newUser.username,
+          role:newUser.role
          
         },
         "User registered successfully"
@@ -125,6 +126,7 @@ const loginUser = AsyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         username: user.username,
+        role:user.role
       },
       process.env.JWT_SECRET,
       {
@@ -147,6 +149,7 @@ const loginUser = AsyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             username: user.username,
+            role:user.role
           },
           "Loggedin successfully..."
         )
@@ -188,6 +191,7 @@ const verifyAdminOTP = AsyncHandler(async (req, res) => {
         name: admin.name,
         email: admin.email,
         username: admin.username,
+        role:admin.role
       },
       process.env.JWT_SECRET,
       {
@@ -210,6 +214,7 @@ const verifyAdminOTP = AsyncHandler(async (req, res) => {
             name: admin.name,
             email: admin.email,
             username: admin.username,
+            role:admin.role
           },
           "Loggedin as admin successfully..."
         )

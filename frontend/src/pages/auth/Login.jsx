@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Loader from "../../components/Loader.jsx";
 import toast from "react-hot-toast";
@@ -7,8 +7,15 @@ import { useGlobalContext } from "../../context/Contexts.jsx";
 
 const Login = () => {
 
-    const { login } = useGlobalContext()
     const navigate = useNavigate();
+    const { user, login } = useGlobalContext()
+
+    useEffect(() => {
+        if (user) {
+            if (user.role === "admin") navigate('/admin');
+            else navigate('/user');
+        }
+    }, [user, navigate]);
     const [form, setForm] = useState({
         username: "",
         password: "",

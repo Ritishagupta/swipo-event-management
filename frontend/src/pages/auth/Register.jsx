@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Loader from "../../components/Loader.jsx";
 import toast from "react-hot-toast";
@@ -14,7 +14,15 @@ const Register = () => {
         role: "user", // default role
     });
     const [loading, setLoading] = useState(false)
-    const { login } = useGlobalContext()
+
+    const { user, login } = useGlobalContext()
+    
+        useEffect(() => {
+            if (user) {
+                if (user.role === "admin") navigate('/admin');
+                else navigate('/user');
+            }
+        }, [user, navigate]);
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });

@@ -17,7 +17,7 @@ const Navbar = () => {
         <p>Welcome, <span className="font-bold">{user.name}</span></p>
         <button
           onClick={handleLogout}
-          className="btn text-white flex items-center justify-center cursor-pointer gap-1 font-bold">
+          className="btn btn-accent text-white flex items-center justify-center cursor-pointer gap-1 font-bold">
           <MdLogout className="text-xl" /> <span>Logout</span>
         </button>
       </> : ""}

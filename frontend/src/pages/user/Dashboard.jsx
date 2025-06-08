@@ -7,6 +7,7 @@ import axios from "axios";
 import { debounce } from "../../utils/Debounce.js";
 import Loader from "../../components/Loader.jsx";
 import toast from "react-hot-toast";
+import AddEvent from "../../components/AddEvent.jsx";
 
 const Dashboard = () => {
 
@@ -46,7 +47,7 @@ const Dashboard = () => {
         }
     };
 
-    const handleEventUpdate = ()=>{
+    const handleEventUpdate = () => {
         fetchEvents()
     }
 
@@ -65,7 +66,7 @@ const Dashboard = () => {
                 <div className="flex gap-5">
                     <div className="avatar ">
                         <div className="mask mask-hexagon-2 w-24">
-                            <img src="https://img.daisyui.com/images/profile/demo/distracted2@192.webp" />
+                            <img src="/profile.png" />
                         </div>
                     </div>
                     <div >
@@ -134,7 +135,10 @@ const Dashboard = () => {
 
             </div>
 
-            <h1 className="mt-5 text-3xl w-full border-b-2 border-slate-400">My Events</h1>
+            <div className="flex items-center justify-between mt-5 py-2 w-full border-b-2 border-slate-400">
+                <h1 className="text-3xl">My Events</h1>
+                <AddEvent onEventAdded = {handleEventUpdate}/>
+            </div>
             <div className="my-5 flex items-center justify-between gap-10">
                 <label className="input">
                     <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -145,7 +149,7 @@ const Dashboard = () => {
                     </svg>
                     <input
                         type="search"
-                        placeholder="Search by Title or City"
+                        placeholder="Search by Title "
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -158,7 +162,7 @@ const Dashboard = () => {
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                     />
-                    <select className="select" onChange={(e)=>setCity(e.target.value)}>
+                    <select className="select" onChange={(e) => setCity(e.target.value)}>
                         <option disabled>Choose city</option>
                         {cities.map((city, index) => (
                             <option key={index} value={city}>{city}</option>
@@ -173,7 +177,7 @@ const Dashboard = () => {
                 : <div className="grid grid-cols-5 gap-10 mt-5  ">
 
                     {events.length > 0 ? (
-                        events.map((event) => <EventCard key={event._id} data={event} onEventUpdated={handleEventUpdate}/>)
+                        events.map((event) => <EventCard key={event._id} data={event} onEventUpdated={handleEventUpdate} />)
                     ) : (
                         <p className="text-gray-500 col-span-5 text-center">No events found.</p>
                     )}

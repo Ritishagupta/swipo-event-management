@@ -22,7 +22,7 @@ const Dashboard = () => {
       const params = {
         page,
         limit: 5,
-        ...(search && { title: search,city }),
+        ...(search && { title: search, city }),
         ...(city && { city }),
         ...(date && { date }),
       };
@@ -40,7 +40,7 @@ const Dashboard = () => {
   const debouncedFetchCandidates = useCallback(debounce(fetchEvents, 300), [fetchEvents]);
 
   useEffect(() => {
-     debouncedFetchCandidates();
+    debouncedFetchCandidates();
   }, [search, city, date, page]);
 
   return (
@@ -55,7 +55,7 @@ const Dashboard = () => {
           </svg>
           <input
             type="search"
-            placeholder="Search by Title or City"
+            placeholder="Search by Title"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -68,7 +68,7 @@ const Dashboard = () => {
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
-          <select className="select">
+          <select className="select" onChange={(e) => setCity(e.target.value)}>
             <option disabled>Choose city</option>
             {cities.map((city, index) => (
               <option key={index} value={city}>{city}</option>

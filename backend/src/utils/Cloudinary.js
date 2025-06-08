@@ -52,7 +52,6 @@ const deleteFromCloudinary = async (url) => {
     const publicId = getCloudinaryPublicId(url);
     if (publicId) {
       const result = await cloudinary.uploader.destroy(publicId);
-      console.log("Image deleted ✅ --", result);
       return result;
     } else {
       console.warn("Public ID could not be extracted.");
