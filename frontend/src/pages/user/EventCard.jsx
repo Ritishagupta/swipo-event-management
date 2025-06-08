@@ -4,73 +4,74 @@ import { IoPersonCircleSharp } from "react-icons/io5";
 import { MdOutlinePlace } from "react-icons/md";
 import { HiOutlineCalendarDateRange } from "react-icons/hi2";
 import UpdateEvent from "./UpdateEvent";
-const EventCard = () => {
+const EventCard = ({ data,onEventUpdated }) => {
+    const {
+        title,
+        description,
+        city,
+        date,
+        address,
+        likes,
+        dislikes,
+        organizerDetails,
+        phone,
+        email,
+        displayStatus,
+        images = [],
+    } = data;
+
     return (
         <div className="card bg-base-100 w-60 shadow-sm border-cyan-300 border-2 p-2">
 
-            <div >
-                <h2 className="card-title">Event Title</h2>
-                <p className="text-xs">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi sunt nemo odio illum est tempora.</p>
+            <div>
+                <h2 className="card-title text-sm">{title}</h2>
+                <p className="text-xs line-clamp-3">{description}</p>
             </div>
-            <div className="carousel w-full h-28 mt-2 rounded-md">
-                <div id="item1" className="carousel-item w-full">
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
-                        className="w-full" />
-                </div>
-                <div id="item2" className="carousel-item w-full">
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp"
-                        className="w-full" />
-                </div>
-                <div id="item3" className="carousel-item w-full">
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp"
-                        className="w-full" />
-                </div>
-                <div id="item4" className="carousel-item w-full">
-                    <img
-                        src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp"
-                        className="w-full" />
-                </div>
-            </div>
-            <div className="flex w-full justify-center gap-2 py-2">
-                <a href="#item1" className="btn btn-xs">1</a>
-                <a href="#item2" className="btn btn-xs">2</a>
-                <a href="#item3" className="btn btn-xs">3</a>
-                <a href="#item4" className="btn btn-xs">4</a>
-            </div>
-            
 
-            <div className="flex items-center gap-4 ">
-                <p className="flex items-center justify-center text-lg">
-                    <button >
-                        <AiOutlineLike />
-                    </button>
-                    <span>10</span>
-                </p>
-                <p className="flex items-center justify-center text-lg">
-                    <button >
-                        <AiOutlineDislike />
-                    </button>
-                    <span>2</span>
-                </p>
+            {images.length > 0 && (
+                <div className="carousel w-full h-28 mt-2 rounded-md overflow-hidden">
+                    {images.map((image, idx) => (
+                        <div key={idx} id={`item${idx}`} className="carousel-item w-full">
+                            <img src={image} alt={`event-img-${idx}`} className="w-full object-cover" />
+                        </div>
+                    ))}
+                </div>
+            )}
 
+            {images.length > 1 && (
+                <div className="flex w-full justify-center gap-2 py-2">
+                    {images.map((_, idx) => (
+                        <a key={idx} href={`#item${idx}`} className="btn btn-xs">
+                            {idx + 1}
+                        </a>
+                    ))}
+                </div>
+            )}
+
+            <div className="flex items-center gap-4 mt-2">
+                <p className="flex items-center gap-1 text-lg">
+                    <AiOutlineLike />
+                    <span>{likes}</span>
+                </p>
+                <p className="flex items-center gap-1 text-lg">
+                    <AiOutlineDislike />
+                    <span>{dislikes}</span>
+                </p>
             </div>
-            <div className="flex items-center gap-2 mt-2">
-                <div className="flex items-center">
+            <div className="flex items-center gap-4 mt-2">
+                <div className="flex items-center gap-1">
                     <MdOutlinePlace />
-                    <p className="text-xs">Mumbai</p>
+                    <p className="text-xs">{city}</p>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center gap-1">
                     <HiOutlineCalendarDateRange />
-                    <p className="text-xs">10-06-2025</p>
+                    <p className="text-xs">{new Date(date).toLocaleDateString()}</p>
                 </div>
             </div>
             <div className="my-2 flex items-center justify-between">
-                    <UpdateEvent/>
-                    <button className="btn btn-error btn-sm font-bold">Delete</button>
-                    <button className="btn btn-dash btn-info btn-sm">Copy URL</button>
+                <UpdateEvent data={data} onEventUpdated={onEventUpdated} />
+                <button className="btn btn-error btn-sm font-bold">Delete</button>
+                <button className="btn btn-dash btn-info btn-sm">Copy URL</button>
             </div>
 
         </div>

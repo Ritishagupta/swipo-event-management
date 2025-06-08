@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Loader from "../../components/Loader";
+import toast from "react-hot-toast";
 
 const ResetPassword = () => {
   const { token } = useParams(); // token from route
@@ -26,11 +27,12 @@ const ResetPassword = () => {
       })
 
       if (response?.data?.statusCode === 200) {
+        toast.success(response?.data?.message);
         navigate('/')
       }
       setLoading(false)
     } catch (error) {
-      console.log(error)
+      toast.error(error.response?.data?.message || error.message);
     } finally {
       setLoading(false)
     }

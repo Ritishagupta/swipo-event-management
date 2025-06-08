@@ -5,6 +5,8 @@ import { useGlobalContext } from "../../context/Contexts.jsx";
 import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { debounce } from "../../utils/Debounce.js";
+import Loader from "../../components/Loader.jsx";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
 
@@ -28,14 +30,14 @@ const Dashboard = () => {
             const params = {
                 page,
                 limit: 5,
-                ...(search && { title: search, city }),
+                ...(search && { title: search }),
                 ...(city && { city }),
                 ...(date && { date }),
             };
 
             const response = await axios.get("/api/v1/event/get-user-events", { params });
-            setEvents(response.data?.data?.events || []);
-            setTotalPages(response?.data?.meta?.totalPages || 1);
+            setEvents(response?.data?.data?.data || []);
+            setTotalPages(response?.data?.totalPages || 1);
             setLoading(false)
         } catch (error) {
             toast.error(error.response?.data?.message || error.message);
@@ -44,6 +46,9 @@ const Dashboard = () => {
         }
     };
 
+    const handleEventUpdate = ()=>{
+        fetchEvents()
+    }
 
     // debounce to delay search input handling
     const debouncedFetchCandidates = useCallback(debounce(fetchEvents, 300), [fetchEvents]);
@@ -153,7 +158,7 @@ const Dashboard = () => {
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                     />
-                    <select className="select">
+                    <select className="select" onChange={(e)=>setCity(e.target.value)}>
                         <option disabled>Choose city</option>
                         {cities.map((city, index) => (
                             <option key={index} value={city}>{city}</option>
@@ -163,13 +168,17 @@ const Dashboard = () => {
 
 
             </div>
-            <div className="grid grid-cols-5 gap-10 mt-5  ">
-                {events.length > 0 ? (
-                    events.map((event) => <EventCard key={event._id} data={event} />)
-                ) : (
-                    <p className="text-gray-500 col-span-5 text-center">No events found.</p>
-                )}
+            {loading ? <div className="flex items-center justify-center mt-20"><Loader />
             </div>
+                : <div className="grid grid-cols-5 gap-10 mt-5  ">
+
+                    {events.length > 0 ? (
+                        events.map((event) => <EventCard key={event._id} data={event} onEventUpdated={handleEventUpdate}/>)
+                    ) : (
+                        <p className="text-gray-500 col-span-5 text-center">No events found.</p>
+                    )}
+                </div>}
+
             <div className="mb-20">
                 <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
